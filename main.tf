@@ -19,27 +19,20 @@ resource "azurerm_resource_group" "santoshrg" {
   name     = "santoshrg"
   location = "West Europe"
 }
+resource "azurerm_virtual_network" "ventapp" {
+  name = "ventapp"
+  resource_group_name = azurerm_resource_group.santoshrg.name
+  location = azurerm_resource_group.santoshrg.location
+  address_space = ["10.0.0.0/16"]
 
-resource "azurerm_storage_account" "santoshstg1" {
-  name                     = "santoshstg1"
-  resource_group_name      = azurerm_resource_group.santoshrg.name
-  location                 = azurerm_resource_group.santoshrg.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-resource "azurerm_storage_container" "sancont" {
-  name = "sancont"
-  storage_account_name = azurerm_storage_account.santoshstg1.name
-  container_access_type = "private"
-  
-  
+  subnet {
+    name = "websubnet"
+    address_prefixes = ["10.0.0.0/24"]
+
+  }
+  subnet {
+    name = "appsubent"
+    address_prefixes = ["10.0.1.0/24"]
+  }
 }
 
-resource "azurerm_storage_blob" "sabblob" {
-  name = "sanblob"
-  storage_account_name = azurerm_storage_account.santoshstg1.name
-  storage_container_name = azurerm_storage_container.sancont.name
-  type = "Block"
-  source = "portfolio-01.jpg"
-  
-}
